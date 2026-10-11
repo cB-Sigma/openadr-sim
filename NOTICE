@@ -1,0 +1,60 @@
+openadr-sim (simulated OpenADR 2.0b, 2.0a and 3 VENs and VTNs, in Go)
+Copyright 2026 Abhinav Gautam
+
+This module is licensed under the Apache License, Version 2.0 (LICENSE).
+
+The code was written for SigmaM2M, a oneM2M platform, from the OpenADR
+specifications (PROVENANCE.md). It contains no code from other
+projects. The source files that come from SigmaM2M (sim/vensim/vensim.go,
+sim/vtnsim/vtnsim.go, sim/oadr3sim/sim.go) carry no per-file copyright
+header, the convention of the code they come from; the copyright line
+above covers them. Files added for this module carry "Copyright 2026
+Abhinav Gautam" and "SPDX-License-Identifier: Apache-2.0".
+
+Trademarks
+----------
+
+"OpenADR" is a trademark of the OpenADR Alliance. This module is not
+made, affiliated with, endorsed, certified or supported by the OpenADR
+Alliance; the name is used only to say which protocol it simulates.
+
+OpenADR Alliance material
+-------------------------
+
+None of the OpenADR Alliance's specifications, schemas or OpenAPI
+definitions is included; names, codes and rules are used as facts, in
+our own words (see the openadr module's NOTICE).
+
+Dependencies
+------------
+
+- github.com/cB-Sigma/openadr (Apache-2.0, Copyright 2026 Abhinav
+  Gautam): the OpenADR library the simulators are built on, with its
+  dependencies (listed in its NOTICE): github.com/beevik/etree
+  (BSD-2-Clause), github.com/russellhaering/goxmldsig and
+  github.com/jonboulle/clockwork (Apache-2.0), github.com/cB-Sigma/xsd
+  (Apache-2.0).
+- The Go standard library (BSD-3-Clause, Copyright The Go Authors).
+
+Interop tests (interop/, a separate test-only module)
+-----------------------------------------------------
+
+interop/peer/openleadr/Dockerfile installs OpenLEADR 0.5.36
+(openleadr-python, Apache-2.0, Copyright 2020 Contributors to
+OpenLEADR) and its dependencies from PyPI into a python:3.12.10-slim
+image at test time. interop/peer/openleadr-rs/Dockerfile clones
+openleadr-rs at tag v0.2.6 (Apache-2.0 or MIT, Copyright (c) 2024
+Stichting ElaadNL and Contributors) and builds it at test time; the
+tests load openleadr-rs's own user fixtures from that image into a
+postgres:16 container. Nothing of either project is copied into this
+repository. interop/peer/openleadr/vtn.py and ven.py are our own
+scripts that use OpenLEADR's server and client.
+
+Test data
+---------
+
+Every VEN and VTN ID, name, market context, URL, client ID and secret
+in this module is a made-up demo value, except the client IDs and
+secrets of openleadr-rs's public test fixtures in
+interop/openleadrrs_test.go. Keys and certificates are generated when
+the tests run.
