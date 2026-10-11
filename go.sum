@@ -1,7 +1,7 @@
 github.com/beevik/etree v1.6.0 h1:u8Kwy8pp9D9XeITj2Z0XtA5qqZEmtJtuXZRQi+j03eE=
 github.com/beevik/etree v1.6.0/go.mod h1:bh4zJxiIr62SOf9pRzN7UUYaEDa9HEKafK25+sLc0Gc=
-github.com/cB-Sigma/openadr v0.1.0 h1:2u5lj7azqrCamCt+qgcBz9bdVqXEVw0IRupGQpuOl1k=
-github.com/cB-Sigma/openadr v0.1.0/go.mod h1:YZRxVrRh5+nhGJFuEWptJXEnR3jzBYXX3Qc6jq/xRPo=
+github.com/cB-Sigma/openadr v0.2.0 h1:ykW32XoZ1lTonXhAfsFDoiT12/BN+6m/58UpPSBM0z0=
+github.com/cB-Sigma/openadr v0.2.0/go.mod h1:YZRxVrRh5+nhGJFuEWptJXEnR3jzBYXX3Qc6jq/xRPo=
 github.com/cB-Sigma/xsd v0.2.0 h1:pg0xXTKCGnD1Jyj9C+EjnScPkRrSvfX4snmixqqOE60=
 github.com/cB-Sigma/xsd v0.2.0/go.mod h1:eX7OJSR6arn8kZCjtRlSxhyP41YumLLx6kX2yIVRZCA=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=

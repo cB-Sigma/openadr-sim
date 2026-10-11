@@ -3,6 +3,20 @@
 All notable changes to this module. Versions follow semantic versioning;
 before v1 the API may change in minor versions.
 
+## v0.2.0 (2026-10-11)
+
+Needs openadr v0.2.0.
+
+- New: `oadr3sim.VTN` (`NewVTN`, `Start`, `AddEvent`, `Grant`), a
+  simulated OpenADR 3.1 or 3.0 VTN built on openadr's new `oadr3/vtn`,
+  with demo business-logic and VEN clients and an optional demo program
+  and event; webhooks to local callbacks are allowed.
+- New: `oadrsim vtn3` runs it (`-addr`, `-version`, `-base-path`,
+  `-demo`, `-anonymous`).
+- New tests: `vensim` against openadr's new `oadr2b/vtn`, and openadr's
+  new `oadr2b/ven` against `vtnsim` (pull and push, plain HTTP and
+  mutual TLS with signatures).
+
 ## v0.1.0 (2026-10-11)
 
 First release as a module of its own, split from the openadr module: a

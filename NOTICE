@@ -54,7 +54,8 @@ Test data
 ---------
 
 Every VEN and VTN ID, name, market context, URL, client ID and secret
-in this module is a made-up demo value, except the client IDs and
+in this module (including the simulated OpenADR 3 VTN's demo clients
+in sim/oadr3sim/vtn.go) is a made-up demo value, except the client IDs and
 secrets of openleadr-rs's public test fixtures in
 interop/openleadrrs_test.go. Keys and certificates are generated when
 the tests run.

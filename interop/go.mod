@@ -3,7 +3,7 @@ module github.com/cB-Sigma/openadr-sim/interop
 go 1.27.1
 
 require (
-	github.com/cB-Sigma/openadr v0.1.0
+	github.com/cB-Sigma/openadr v0.2.0
 	github.com/cB-Sigma/openadr-sim v0.0.0
 )
 

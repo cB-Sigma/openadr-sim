@@ -9,7 +9,8 @@ takes pushes, opts in or out and signs its messages; the same VEN as a
 2.0a VEN; a 2.0b VTN that registers one VEN, serves events and queued
 messages, pushes, requests reports, signs and checks signatures and
 records everything; an OpenADR 3 VEN and business-logic client over the
-REST API with OAuth2 tokens; and a webhook receiver. Each runs in
+REST API with OAuth2 tokens; an OpenADR 3 VTN with demo clients; and a
+webhook receiver. Each runs in
 process in a Go test, or from the `oadrsim` command. It is built on
 [openadr](https://github.com/cB-Sigma/openadr). Written for SigmaM2M, a
 oneM2M platform; it has no dependency on it.
@@ -29,7 +30,7 @@ oneM2M platform; it has no dependency on it.
 | 2.0b VTN over XMPP, a 2.0a VTN | no |
 | OpenADR 3 VEN (`oadr3sim.VEN`): token, enrolment (ven object and resources), programs and events by target, reports | yes |
 | OpenADR 3 webhook receiver (`oadr3sim.Webhook`): echo challenge (or a failed one), bearer check, notifications recorded | yes |
-| OpenADR 3 VTN | no |
+| OpenADR 3 VTN (`oadr3sim.VTN`, `oadrsim vtn3`): the openadr library's `oadr3/vtn` on a local address with demo BL and VEN clients, an optional demo program and event, `AddEvent` and `Grant` for tests; 3.1 or 3.0; webhooks to local callbacks | yes (since v0.2.0) |
 
 ## Install
 
@@ -49,6 +50,7 @@ go install github.com/cB-Sigma/openadr-sim/cmd/oadrsim@latest
 oadrsim vtn                                          # prints its URL
 oadrsim ven -vtn http://127.0.0.1:PORT -polls 3
 oadrsim ven3 -vtn https://vtn.example/openadr3/3.1.0 -client-id ID -secret S
+oadrsim vtn3 -addr 127.0.0.1:8080                    # prints its URL and demo clients
 ```
 
 | Command | Flags |
@@ -56,6 +58,7 @@ oadrsim ven3 -vtn https://vtn.example/openadr3/3.1.0 -client-id ID -secret S
 | `vtn` | `-ven-id` (default `ven-1`, given to the VEN that registers), `-level` (SIMPLE level of the one demo event, default 1); plain HTTP on 127.0.0.1 until interrupted |
 | `ven` | `-vtn` URL (required), `-ven-id` (default: the one the VTN assigns), `-polls` (default 3; 0 polls until interrupted), `-every` (default 2s) |
 | `ven3` | `-vtn` URL up to the base path (required), `-client-id`, `-secret`, `-name` (venName, default `ven-1`) |
+| `vtn3` | `-addr` (default `127.0.0.1:0`), `-version` (`3.1` or `3.0`), `-base-path`, `-demo` (default true: a demo program and event targeted at `sim-group`), `-anonymous`; plain HTTP until interrupted; demo clients `sim-bl` / `sim-bl-secret` (business logic) and `sim-ven` / `sim-ven-secret` (VEN) |
 
 ## In Go tests
 
@@ -84,8 +87,8 @@ Reference: https://pkg.go.dev/github.com/cB-Sigma/openadr-sim
 |---|---|
 | `sim/vensim` | `New(Config)`, `VEN` (`Register`, `Reregister`, `RequestEvents`, `Poll`, `SendTelemetry`, `CreateOpt`, `CancelOpt`, `CancelRegistration`, `Send`, `SendRaw`, `SendA`, `StartPush`, the fault switches, `Events`, `Requests`, `Received`, `LastSent`, `TLS`) |
 | `sim/vtnsim` | `New(Config)`, `VTN` (`Start`, `SetEvents`, `Queue`, `Registered`, `Received`, `Find`, `Metadata`, `SignatureErrors`), `HistoryRequest` |
-| `sim/oadr3sim` | `Client`, `NewVEN` / `VEN` (`Enrol`, `Programs`, `Events`, `Report`), `NewWebhook` / `Webhook` |
-| `cmd/oadrsim` | `vtn`, `ven` and `ven3`, as above |
+| `sim/oadr3sim` | `Client`, `NewVEN` / `VEN` (`Enrol`, `Programs`, `Events`, `Report`), `NewWebhook` / `Webhook`, `NewVTN` / `VTN` (`Start`, `URL`, `AddEvent`, `Grant`, `VTN`, `Close`) |
+| `cmd/oadrsim` | `vtn`, `ven`, `vtn3` and `ven3`, as above |
 | `interop` (nested module, tests only) | OpenLEADR's VTN and VEN client and openleadr-rs's VTN against the simulators, in containers |
 
 Changes per version are in [CHANGELOG.md](CHANGELOG.md).
@@ -101,7 +104,11 @@ The tests drive the openadr library's code through the simulators: the
 2.0b VEN against the VTN in pull and push mode and over mutual TLS with
 signatures both ways (with unsigned, altered and replayed requests
 refused), the OpenADR 3 VEN and webhook against a small VTN written in
-the test, and the command's VTN and VEN against each other.
+the test and against the simulated OpenADR 3 VTN (enrolment, a grant,
+events by target, a report, a webhook notification; 3.1 and 3.0), the
+2.0b VEN against the openadr library's ready VTN (`oadr2b/vtn`) and the
+library's ready VEN (`oadr2b/ven`) against the 2.0b VTN, and the
+command's VTNs and VENs against each other.
 
 `interop/` is a nested module with its own go.mod. Its tests build
 `interop/peer/openleadr` (python:3.12.10-slim with openleadr 0.5.36 from
@@ -150,7 +157,10 @@ fingerprint.
 - Not yet: 2.0b push mode, 2.0a and XMPP against another
   implementation (OpenLEADR has none of them), opts against another VTN
   (OpenLEADR's VTN serves no EiOpt endpoint), the webhook receiver
-  against another VTN (openleadr-rs does not send webhooks), an OpenADR
+  against another VTN (openleadr-rs does not send webhooks), the
+  simulated OpenADR 3 VTN against another VEN here (its VTN code is the
+  openadr library's `oadr3/vtn`, which runs openleadr-rs's client tests
+  in the openadr module's interop tests), an OpenADR
   Alliance test harness, a certified VTN or VEN, real devices. The
   simulators and the openadr library are written by the same author, so
   their agreement with each other is not independent; the OpenLEADR and

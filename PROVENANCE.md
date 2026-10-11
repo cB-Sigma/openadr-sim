@@ -26,6 +26,10 @@ History:
   VTN and VEN client) and openleadr-rs v0.2.6 (its VTN); no simulator
   bug was found. Comments that named SigmaM2M's VEN integration were
   reworded.
+- 2026-10-11 (v0.2.0): sim/oadr3sim/vtn.go and its test are new: a
+  simulated OpenADR 3 VTN that wraps the openadr module's new
+  `oadr3/vtn` package (written the same day, ported from SigmaM2M's
+  OpenADR 3 VTN); `oadrsim vtn3` runs it.
 
 ## Sources
 
@@ -34,6 +38,7 @@ History:
 | 2.0b and 2.0a VEN (sim/vensim) | the openadr module's messages, signatures and TLS rules; the OpenADR 2.0b Profile Specification v1.1 and 2.0a v1.0 for the exchanges (registration, report registration, polling, push, opts) |
 | 2.0b VTN (sim/vtnsim) | the same |
 | OpenADR 3 VEN, business client and webhook (sim/oadr3sim) | the openadr module's client; the OpenADR 3.1.0 definition for the paths, object types and the webhook echo challenge |
+| OpenADR 3 VTN (sim/oadr3sim/vtn.go) | the openadr module's `oadr3/vtn`; demo values our own |
 | Command (cmd/oadrsim) | none (flags are our own) |
 | Test PKI (internal/testpki) | our own; crypto/x509 |
 | Interop peers (interop/peer/openleadr/vtn.py, ven.py) | our own scripts using OpenLEADR 0.5.36's OpenADRServer and OpenADRClient, installed from PyPI at test time; openleadr-rs v0.2.6 built at test time and driven over its REST API |

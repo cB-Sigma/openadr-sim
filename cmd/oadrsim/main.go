@@ -12,6 +12,10 @@
 //	oadrsim ven3 -vtn URL -client-id ID -secret S [-name ven-1]
 //	    an OpenADR 3 VEN: enrols over the REST API and lists programs and
 //	    events
+//	oadrsim vtn3 [-addr 127.0.0.1:0] [-version 3.1] [-base-path P] [-demo] [-anonymous]
+//	    an OpenADR 3 VTN (plain HTTP) with demo BL and VEN clients and,
+//	    with -demo (the default), a demo program and event, until
+//	    interrupted
 package main
 
 import (
@@ -39,7 +43,7 @@ func main() {
 	}
 }
 
-const usage = "usage: oadrsim vtn|ven|ven3 [flags] (oadrsim <command> -h for the flags)"
+const usage = "usage: oadrsim vtn|ven|vtn3|ven3 [flags] (oadrsim <command> -h for the flags)"
 
 func run(ctx context.Context, args []string, out io.Writer) error {
 	if len(args) == 0 {
@@ -52,8 +56,38 @@ func run(ctx context.Context, args []string, out io.Writer) error {
 		return runVEN(ctx, args[1:], out)
 	case "ven3":
 		return runVEN3(ctx, args[1:], out)
+	case "vtn3":
+		return runVTN3(ctx, args[1:], out)
 	}
 	return errors.New(usage)
+}
+
+func runVTN3(ctx context.Context, args []string, out io.Writer) error {
+	fs := flag.NewFlagSet("vtn3", flag.ContinueOnError)
+	addr := fs.String("addr", "127.0.0.1:0", "address to listen on")
+	version := fs.String("version", "3.1", "OpenADR version: 3.1 or 3.0")
+	basePath := fs.String("base-path", "", "path before /programs, e.g. /openadr3/3.1.0")
+	demo := fs.Bool("demo", true, "create a demo program and event")
+	anonymous := fs.Bool("anonymous", false, "answer untargeted programs and events without a token")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	v, err := oadr3sim.NewVTN(oadr3sim.VTNConfig{Version: *version, BasePath: *basePath, Demo: *demo, AnonymousRead: *anonymous})
+	if err != nil {
+		return err
+	}
+	url, err := v.Start(*addr)
+	if err != nil {
+		return err
+	}
+	defer v.Close()
+	fmt.Fprintf(out, "OpenADR %s VTN listening on %s\n", *version, url)
+	fmt.Fprintf(out, "business logic: client ID %s, secret %s\n", oadr3sim.DemoBLClientID, oadr3sim.DemoBLSecret)
+	fmt.Fprintf(out, "VEN: client ID %s, secret %s (demo values)\n", oadr3sim.DemoVENClientID, oadr3sim.DemoVENSecret)
+	<-ctx.Done()
+	st := v.VTN().Status()
+	fmt.Fprintf(out, "objects: %d program(s), %d event(s), %d ven(s), %d report(s)\n", st.Objects["PROGRAM"], st.Objects["EVENT"], st.Objects["VEN"], st.Objects["REPORT"])
+	return nil
 }
 
 func runVTN(ctx context.Context, args []string, out io.Writer) error {

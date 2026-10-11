@@ -67,6 +67,45 @@ func TestVTNAndVEN(t *testing.T) {
 	}
 }
 
+// The vtn3 command serves an OpenADR 3 VEN that the ven3 command runs
+// against it.
+func TestVTN3AndVEN3(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	vtnCtx, stopVTN := context.WithCancel(ctx)
+	var vtnOut syncBuffer
+	done := make(chan error, 1)
+	go func() { done <- run(vtnCtx, []string{"vtn3", "-base-path", "/openadr3/3.1.0"}, &vtnOut) }()
+	var url string
+	for url == "" {
+		if ctx.Err() != nil {
+			t.Fatal("the VTN did not start")
+		}
+		if s := vtnOut.String(); strings.Contains(s, "listening on ") {
+			url = strings.Fields(strings.SplitN(s, "listening on ", 2)[1])[0]
+		} else {
+			time.Sleep(10 * time.Millisecond)
+		}
+	}
+	var venOut bytes.Buffer
+	if err := run(ctx, []string{"ven3", "-vtn", url, "-client-id", "sim-ven", "-secret", "sim-ven-secret", "-name", "site-9"}, &venOut); err != nil {
+		t.Fatalf("ven3: %v\n%s", err, venOut.String())
+	}
+	if !strings.Contains(venOut.String(), "enrolled as site-9") || !strings.Contains(venOut.String(), "program(s)") {
+		t.Errorf("ven3 output:\n%s", venOut.String())
+	}
+	stopVTN()
+	if err := <-done; err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(vtnOut.String(), "1 ven(s)") {
+		t.Errorf("vtn3 output: %s", vtnOut.String())
+	}
+	if err := run(ctx, []string{"vtn3", "-version", "2.0"}, &bytes.Buffer{}); err == nil {
+		t.Fatal("version 2.0 was accepted")
+	}
+}
+
 func TestUsage(t *testing.T) {
 	if err := run(context.Background(), nil, &bytes.Buffer{}); err == nil || !strings.Contains(err.Error(), "usage") {
 		t.Fatalf("got %v", err)

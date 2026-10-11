@@ -2,7 +2,7 @@ module github.com/cB-Sigma/openadr-sim
 
 go 1.27.1
 
-require github.com/cB-Sigma/openadr v0.1.0
+require github.com/cB-Sigma/openadr v0.2.0
 
 require (
 	github.com/beevik/etree v1.6.0 // indirect
